@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AI College Helpdesk - Sree Venkateswara Engineering College</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #f4f7fa;
+            color: #333;
+            overflow: hidden;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 270px;
+            background: linear-gradient(180deg, #162b4d 0%, #0f1e36 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-right: 1px solid #cbd5e1;
+        }
+
+        .logo-section {
+            text-align: center;
+            padding: 10px 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-section i { font-size: 36px; color: #4da3ff; margin-bottom: 8px; }
+        .logo-section h2 { font-size: 22px; letter-spacing: 1px; }
+        .logo-section p { font-size: 11px; color: #a0b4cc; margin-top: 4px; }
+
+        .menu-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #7d93b2;
+            padding: 20px 25px 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu { list-style: none; flex-grow: 1; }
+
+        .nav-item {
+            padding: 13px 25px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover { background-color: rgba(255, 255, 255, 0.08); color: white; }
+        .nav-item.active {
+            background-color: #2563eb;
+            color: white;
+            border-left: 4px solid #60a5fa;
+            font-weight: 600;
+        }
+        .nav-item i { width: 18px; text-align: center; }
+
+        .sidebar-footer {
+            padding: 15px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-footer i { font-size: 28px; color: #4da3ff; }
+        .sidebar-footer h4 { font-size: 13px; }
+        .sidebar-footer span { font-size: 11px; color: #94a3b8; }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .top-header {
+            background: white;
+            padding: 16px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .top-header h1 { font-size: 18px; color: #1e293b; }
+        .top-header p { font-size: 12px; color: #64748b; }
+
+        .status-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* View Sections (Separate Pages) */
+        .view-section {
+            display: none;
+            flex-grow: 1;
+            padding: 25px 35px;
+            overflow-y: auto;
+            background-color: #f4f7fa;
+        }
+        .view-section.active { display: flex; flex-direction: column; }
+
+        .welcome-banner { text-align: center; margin-bottom: 20px; }
+        .welcome-banner i {
+            font-size: 32px;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 14px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .welcome-banner h2 { font-size: 20px; color: #1e293b; }
+        .welcome-banner p { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+        .chat-box {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+            min-height: 180px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .bot-message {
+            background: white;
+            border: 1px solid #e2e8f0;
+            align-self: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .bot-message strong { display: block; font-size: 12px; color: #2563eb; margin-bottom: 4px; }
+
+        .user-message { background: #2563eb; color: white; align-self: flex-end; }
+
+        .cards-title { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 12px; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .info-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+        .info-card i { font-size: 20px; color: #2563eb; margin-bottom: 8px; }
+        .info-card h4 { font-size: 14px; color: #1e293b; }
+
+        .chat-input-area {
+            background: white;
+            padding: 14px 35px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 12px 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+        .chat-input-area input:focus { border-color: #2563eb; }
+        .chat-input-area button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .chat-input-area button:hover { background: #1d4ed8; }
+
+        /* Detail Pages Layout */
+        .detail-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+        .detail-card h2 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+        .detail-card h2 i { color: #2563eb; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .data-table th, .data-table td {
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        .data-table th { background: #f8fafc; color: #1e293b; }
+
+        .badge-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .dept-badge {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            width: fit-content;
+        }
+        .back-btn:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <div>
+            <div class="logo-section">
+                <i class="fas fa-graduation-cap"></i>
+                <h2>SVEC</h2>
+                <p>Sree Venkateswara Engineering College</p>
+            </div>
+            <div class="menu-label">Main Menu</div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="switchTab('chatbot', this)"><i class="fas fa-robot"></i> AI Chatbot</li>
+                <li class="nav-item" onclick="switchTab('admissions', this)"><i class="fas fa-user-graduate"></i> Admissions</li>
+                <li class="nav-item" onclick="switchTab('departments', this)"><i class="fas fa-building"></i> Departments</li>
+                <li class="nav-item" onclick="switchTab('fees', this)"><i class="fas fa-wallet"></i> Fee Details</li>
+                <li class="nav-item" onclick="switchTab('exams', this)"><i class="fas fa-file-alt"></i> Examination</li>
+                <li class="nav-item" onclick="switchTab('placements', this)"><i class="fas fa-briefcase"></i> Placements</li>
+                <li class="nav-item" onclick="switchTab('support', this)"><i class="fas fa-headset"></i> Help & Support</li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <i class="fas fa-user-circle"></i>
+            <div>
+                <h4>Student Portal</h4>
+                <span>SVEC Helpdesk</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <div>
+                <h1>Smart AI College Helpdesk</h1>
+                <p>Sree Venkateswara Engineering College</p>
+            </div>
+            <div class="status-badge">● AI Assistant Online</div>
+        </div>
+
+        <!-- 1. AI Chatbot View -->
+        <div id="chatbot" class="view-section active">
+            <div class="welcome-banner">
+                <i class="fas fa-robot"></i>
+                <h2>Welcome to SVEC AI Helpdesk!</h2>
+                <p>Your smart virtual college assistant. Ask me anything about Sree Venkateswara Engineering College.</p>
+            </div>
+
+            <div class="chat-box" id="chatBox">
+                <div class="message bot-message">
+                    <strong>SVEC AI Assistant</strong>
+                    Hello Student! 👋 Welcome to Sree Venkateswara Engineering College. I can help you with admissions, departments, fee details, examinations, placements, and support. How can I help you today?
+                </div>
+            </div>
+
+            <div class="cards-title">Explore College Information (Click any card to open)</div>
+            <div class="cards-grid">
+                <div class="info-card" onclick="openFromCard('admissions')"><i class="fas fa-user-graduate"></i><h4>Admissions</h4></div>
+                <div class="info-card" onclick="openFromCard('departments')"><i class="fas fa-building"></i><h4>Departments</h4></div>
+                <div class="info-card" onclick="openFromCard('fees')"><i class="fas fa-wallet"></i><h4>Fee Details</h4></div>
+                <div class="info-card" onclick="openFromCard('exams')"><i class="fas fa-file-alt"></i><h4>Examination</h4></div>
+                <div class="info-card" onclick="openFromCard('placements')"><i class="fas fa-briefcase"></i><h4>Placements</h4></div>
+                <div class="info-card" onclick="openFromCard('support')"><i class="fas fa-headset"></i><h4>Help & Support</h4></div>
+            </div>
+        </div>
+
+        <!-- 2. Admissions View -->
+        <div id="admissions" class="view-section">
+            <div class="detail-card">
+                <h2><i class="fas fa-user-graduate"></i> B.Tech Admissions 2026-27</h2>
+                <p>Admissions at Sree Venkateswara Engineering College (SVEC) are offered via AP EAPCET Counselling and Management Quota.</p>
+                <table class="data-table">
+                    <tr><th>Quota</th><th>Eligibility</th><th>Selection Process</th></tr>
+                    <tr><td>Convener Quota (70%)</td><td>10+2 with PCM (Min 45%)</td><td>AP EAPCET Rank & Web Counselling</td></tr>
+                    <tr><td>Management Quota (30%)</td><td>10+2 with PCM / JEE Main</td><td>Direct College Admission Merit</td></tr>
+                </table>
+                <button class="back-btn" onclick="openFromCard('chatbot')">← Back to AI Chatbot</button>
+            </div>
+        </div>
+
+        <!-- 3. Departments View -->
+        <div id="departments" class="view-section">
+            <div class="detail-card">
+                <h2><i class="fas fa-building"></i> Academic Departments</h2>
+                <p>Sree Venkateswara Engineering College offers the following B.Tech programs:</p>
+                <div class="badge-list">
+                    <div class="dept-badge">CSE - Artificial Intelligence & Machine Learning (AIML)</div>
+                    <div class="dept-badge">Computer Science & Engineering (CSE)</div>
+                    <div class="dept-badge">CSE - Data Science (CSD)</div>
+                    <div class="dept-badge">Electronics & Communication Engineering (ECE)</div>
+                    <div class="dept-badge">Electrical & Electronics Engineering (EEE)</div>
+                    <div class="dept-badge">Mechanical Engineering (MECH)</div>
+                    <div class="dept-badge">Civil Engineering (CIVIL)</div>
+                </div>
+                <button class="back-btn" onclick="openFromCard('chatbot')">← Back to AI Chatbot</button>
+            </div>
+        </div>
+
+        <!-- 4. Fee Details View -->
+        <div id="fees" class="view-section">
+            <div class="detail-card">
+                <h2><i class="fas fa-wallet"></i> Annual Fee Details</h2>
+                <table class="data-table">
+                    <tr><th>Fee Category</th><th>Amount (Per Year)</th><th>Remarks</th></tr>
+                    <tr><td>Tuition Fee (Convener Quota)</td><td>₹54,000</td><td>Eligible for Fee Reimbursement</td></tr>
+                    <tr><td>University & Special Fee</td><td>₹8,500</td><td>Payable annually</td></tr>
+                    <tr><td>College Bus Transport</td><td>₹15,000 - ₹22,000</td><td>Based on route distance</td></tr>
+                    <tr><td>Hostel & Mess Fee</td><td>₹65,000</td><td>Separate Boys & Girls Hostels</td></tr>
+                </table>
+                <button class="back-btn" onclick="openFromCard('chatbot')">← Back to AI Chatbot</button>
+            </div>
+        </div>
+
+        <!-- 5. Examination View -->
+        <div id="exams" class="view-section">
+            <div class="detail-card">
+                <h2><i class="fas fa-file-alt"></i> Examination Cell</h2>
+                <table class="data-table">
+                    <tr><th>Exam Type</th><th>Schedule</th><th>Details</th></tr>
+                    <tr><td>Mid-Term Exams (Mid-1 & Mid-2)</td><td>Every 8 Weeks</td><td>30 Marks Internal Assessment</td></tr>
+                    <tr><td>Semester End Exams</td><td>November & April</td><td>70 Marks External Theory + Labs</td></tr>
+                    <tr><td>Hall Tickets</td><td>5 Days Before Exam</td><td>Available at Exam Branch</td></tr>
+                </table>
+                <button class="back-btn" onclick="openFromCard('chatbot')">← Back to AI Chatbot</button>
+            </div>
+        </div>
+
+        <!-- 6. Placements View -->
+        <div id="placements" class="view-section">
+            <div class="detail-card">
+                <h2><i class="fas fa-briefcase"></i> Training & Placements</h2>
+                <table class="data-table">
+                    <tr><th>Metric</th><th>Details</th></tr>
+                    <tr><td>Top Recruiters</td><td>TCS, Infosys, Wipro, Cognizant, Accenture, HCL</td></tr>
+                    <tr><td>Highest Package</td><td>₹12.5 LPA</td></tr>
+                    <tr><td>Average Package</td><td>₹4.5 LPA</td></tr>
+                </table>
+                <button class="back-btn" onclick="openFromCard('chatbot')">← Back to AI Chatbot</button>
+            </div>
+        </div>
+
+        <!-- 7. Help & Support View -->
+        <div id="support" class="view-section">
+            <div class="detail-card">
+                <h2><i class="fas fa-headset"></i> Help & Support Centre</h2>
+                <table class="data-table">
+                    <tr><th>Office</th><th>Contact</th><th>Timings</th></tr>
+                    <tr><td>Admin Office</td><td>+91 861-2345678 | info@svec.edu.in</td><td>9:30 AM – 4:30 PM</td></tr>
+                    <tr><td>Exam Cell</td><td>exams@svec.edu.in</td><td>10:00 AM – 4:00 PM</td></tr>
+                    <tr><td>Accounts & Fee Counter</td><td>accounts@svec.edu.in</td><td>10:00 AM – 3:30 PM</td></tr>
+                </table>
+                <button class="back-btn" onclick="openFromCard('chatbot')">← Back to AI Chatbot</button>
+            </div>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask anything about Sree Venkateswara Engineering College..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- JavaScript for Tab Switching -->
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (element) element.classList.add('active');
+        }
+
+        function openFromCard(tabId) {
+            const navItems = document.querySelectorAll('.nav-item');
+            const tabMap = { chatbot: 0, admissions: 1, departments: 2, fees: 3, exams: 4, placements: 5, support: 6 };
+            switchTab(tabId, navItems[tabMap[tabId]]);
+        }
+
+        function sendMessage() {
+            const inputField = document.getElementById('userInput');
+            const messageText = inputField.value.trim();
+            if (!messageText) return;
+
+            openFromCard('chatbot');
+            const chatBox = document.getElementById('chatBox');
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.textContent = messageText;
+            chatBox.appendChild(userDiv);
+
+            inputField.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            setTimeout(() => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message bot-message';
+                botDiv.innerHTML = `<strong>SVEC AI Assistant</strong>${getBotResponse(messageText.toLowerCase())}`;
+                chatBox.appendChild(botDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 350);
+        }
+
+        function getBotResponse(q) {
+            if (q.includes('hi') || q.includes('hello')) return "Hello! 👋 Welcome to Sree Venkateswara Engineering College. Ask me about admissions, fees, departments, exams, or placements.";
+            if (q.includes('fee')) return "Annual Convener Quota tuition fee is ₹54,000 + ₹8,500 special fee. Hostel fee is ₹65,000/year.";
+            if (q.includes('admission') || q.includes('eapcet')) return "Admissions are based on AP EAPCET Counselling (70% Convener) and Management Quota (30%).";
+            if (q.includes('department') || q.includes('branch') || q.includes('aiml') || q.includes('cse')) return "Departments at SVEC: CSE, AIML, Data Science, ECE, EEE, Mechanical, and Civil Engineering.";
+            if (q.includes('exam')) return "Mid exams occur every 8 weeks; Semester exams are held in November and April.";
+            if (q.includes('placement') || q.includes('package')) return "Top recruiters: TCS, Infosys, Wipro, Accenture, Cognizant. Highest package: ₹12.5 LPA.";
+            if (q.includes('contact') || q.includes('help') || q.includes('support')) return "Admin Office: +91 861-2345678 | Email: info@svec.edu.in.";
+            return "You can ask me about SVEC Admissions, Departments, Fee Details, Examination, Placements, or Help & Support!";
+        }
+    </script>
+</body>
+</html>
